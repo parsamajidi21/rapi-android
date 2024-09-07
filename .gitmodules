@@ -1,0 +1,3 @@
+[submodule "u-boot-rpi"]
+	path = u-boot-rpi
+	url = https://github.com/parsamajidi21/u-boot-rpi.git
