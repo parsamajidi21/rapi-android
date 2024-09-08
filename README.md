@@ -1,5 +1,51 @@
 # This is a repo dedicated to porting Android on Raspberry pi 4
 
+## Boot sequence in Raspberrypi
+
+1. **BCM2711 Power On**
+
+State: The ARM cores are off, and the GPU (VideoCore IV) is on.
+
+At power-on, the GPU is responsible for handling the boot sequence since it operates as the controller for booting the ARM cores.
+
+2. **First Stage Bootloader (from ROM)**
+
+The GPU executes the first-stage bootloader, which is stored in ROM (Read-Only Memory) on the SoC.
+
+Recovery Check: The bootloader checks if there is a recovery.bin file on the SD card.
+
+If found: It runs the recovery image to reflash or update the EEPROM (Electrically Erasable Programmable Read-Only Memory) with a new bootloader.
+
+If not found: The process moves to the next stage.
+
+3. **Bootloader from EEPROM**
+
+If there is no recovery.bin file, the EEPROM bootloader is executed. This bootloader is also run by the GPU, allowing the GPU to access the SD card or any other boot device (e.g., USB, network boot).
+
+It attempts to load the GPU firmware from the boot partition of the SD card or alternative boot media.
+
+4. **Loading GPU Firmware (start.elf files)**
+
+The GPU bootloader reads the start.elf file, which is the firmware for the VideoCore GPU.
+
+Along with this, the config.txt and cmdline.txt files are also read.
+
+config.txt: This file configures hardware settings, such as overclocking, resolution, memory split, etc.
+
+cmdline.txt: This file contains kernel boot parameters for the ARM core, such as root filesystem location and boot arguments.
+
+5. **ARM CPU Wake-Up**
+
+After loading and executing the GPU firmware, the start.elf file wakes up the ARM CPU.
+
+The ARM cores are now brought online and prepared to boot the OS.
+
+6. **Kernel Boot**
+
+The kernel image (kernel.img or kernel7.img for 32-bit, and kernel8.img for 64-bit) is loaded into memory.
+
+The ARM CPU takes over, and the kernel is booted, leading to the boot process of the operating system.
+
 ## U-Boot
 
 ### Prepare the Environment for Cross Compilation
